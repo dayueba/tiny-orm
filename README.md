@@ -25,7 +25,7 @@ orm
 ```go
 func FindUsers(ctx context.Context) ([]*User, error) {
 	users := make([]*User, 20)
-	err := db.Table(&User{}).Select("id", "name", "age", "ctime","mtime`").Where("age < ", 20).Limit(20).Find(&users).Err
+	err := db.Table(&User{}).Select("id", "name", "age", "ctime","mtime").Where("age < ", 20).Limit(20).Find(&users).Err
 	return users, err
 }
 ```

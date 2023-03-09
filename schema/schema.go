@@ -17,10 +17,14 @@ type Schema struct {
 	// 被映射的对象
 	Model interface{}
 	// 表名
-	Name       string
+	TableName  string
 	Fields     []*Field
 	FieldNames []string
 	fieldMap   map[string]*Field
+}
+
+type Tabler interface {
+	TableName() string
 }
 
 func (schema *Schema) GetField(name string) *Field {
@@ -29,10 +33,16 @@ func (schema *Schema) GetField(name string) *Field {
 
 func Parse(dest interface{}, d dialect.Dialect) *Schema {
 	modelType := reflect.Indirect(reflect.ValueOf(dest)).Type()
+	tableName := modelType.Name()
+
+	modelValue := reflect.New(modelType)
+	if tabler, ok := modelValue.Interface().(Tabler); ok {
+		tableName = tabler.TableName()
+	}
 	schema := &Schema{
-		Model:    dest,
-		Name:     modelType.Name(),
-		fieldMap: make(map[string]*Field),
+		Model:     dest,
+		TableName: tableName,
+		fieldMap:  make(map[string]*Field),
 	}
 
 	for i := 0; i < modelType.NumField(); i++ {

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type mysql struct {

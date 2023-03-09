@@ -33,19 +33,19 @@ func (s *Session) CreateTable() error {
 		columns = append(columns, fmt.Sprintf("%s %s %s", field.Name, field.Type, field.Tag))
 	}
 	desc := strings.Join(columns, ",")
-	_, err := s.Raw(fmt.Sprintf("CREATE TABLE %s (%s);", table.Name, desc)).Exec()
+	_, err := s.Raw(fmt.Sprintf("CREATE TABLE %s (%s);", table.TableName, desc)).Exec()
 	return err
 }
 
 func (s *Session) DropTable() error {
-	_, err := s.Raw(fmt.Sprintf("DROP TABLE IF EXISTS %s", s.RefTable().Name)).Exec()
+	_, err := s.Raw(fmt.Sprintf("DROP TABLE IF EXISTS %s", s.RefTable().TableName)).Exec()
 	return err
 }
 
 func (s *Session) HasTable() bool {
-	sql, values := s.dialect.TableExistSQL(s.RefTable().Name)
+	sql, values := s.dialect.TableExistSQL(s.RefTable().TableName)
 	row := s.Raw(sql, values...).QueryRow()
 	var tmp string
 	_ = row.Scan(&tmp)
-	return tmp == s.RefTable().Name
+	return tmp == s.RefTable().TableName
 }

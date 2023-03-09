@@ -10,7 +10,7 @@ func (s *Session) Insert(values ...interface{}) (int64, error) {
 	recordValues := make([]interface{}, 0)
 	for _, value := range values {
 		table := s.Model(value).RefTable()
-		s.clause.Set(clause.INSERT, table.Name, table.FieldNames)
+		s.clause.Set(clause.INSERT, table.TableName, table.FieldNames)
 		recordValues = append(recordValues, table.RecordValues(value))
 	}
 
@@ -31,7 +31,7 @@ func (s *Session) Find(values interface{}) error {
 	destType := destSlice.Type().Elem()
 	table := s.Model(reflect.New(destType).Elem().Interface()).RefTable()
 
-	s.clause.Set(clause.SELECT, table.Name, table.FieldNames)
+	s.clause.Set(clause.SELECT, table.TableName, table.FieldNames)
 	sql, vars := s.clause.Build(clause.SELECT, clause.WHERE, clause.ORDERBY, clause.LIMIT)
 	rows, err := s.Raw(sql, vars...).QueryRows()
 	if err != nil {
@@ -65,7 +65,7 @@ func (s *Session) Update(kv ...interface{}) (int64, error) {
 			m[kv[i].(string)] = kv[i+1]
 		}
 	}
-	s.clause.Set(clause.UPDATE, s.RefTable().Name, m)
+	s.clause.Set(clause.UPDATE, s.RefTable().TableName, m)
 	sql, vars := s.clause.Build(clause.UPDATE, clause.WHERE)
 	result, err := s.Raw(sql, vars...).Exec()
 	if err != nil {
@@ -75,7 +75,7 @@ func (s *Session) Update(kv ...interface{}) (int64, error) {
 }
 
 func (s *Session) Delete() (int64, error) {
-	s.clause.Set(clause.DELETE, s.RefTable().Name)
+	s.clause.Set(clause.DELETE, s.RefTable().TableName)
 	sql, vars := s.clause.Build(clause.DELETE, clause.WHERE)
 	result, err := s.Raw(sql, vars...).Exec()
 	if err != nil {
@@ -85,7 +85,7 @@ func (s *Session) Delete() (int64, error) {
 }
 
 func (s *Session) Count() (int64, error) {
-	s.clause.Set(clause.COUNT, s.RefTable().Name)
+	s.clause.Set(clause.COUNT, s.RefTable().TableName)
 	sql, vars := s.clause.Build(clause.COUNT, clause.WHERE)
 	row := s.Raw(sql, vars...).QueryRow()
 	var tmp int64

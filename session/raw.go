@@ -42,10 +42,6 @@ func New(db *sql.DB, dialect dialect.Dialect) *Session {
 	return &Session{db: db, dialect: dialect}
 }
 
-func NewSession() *Session {
-	return &Session{}
-}
-
 func (s *Session) Clear() {
 	s.sql.Reset()
 	s.sqlVars = nil
